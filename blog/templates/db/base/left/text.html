@@ -1,0 +1,76 @@
+{# --------------文章详情------------ #}
+{% load staticfiles %}
+<div class="content_box whitebg">
+    {# 隐藏域；token #}
+    {% csrf_token %}
+    <input type="hidden" name="blog_id" value="{{ art.pk }}">
+    <input type="hidden" name="liked" value="{{ liked }}">
+    {# 位置说明 #}
+    <h2 class="htitle">
+        文章详情页
+        <span class="con_nav">您现在的位置是：<a href="/">网站首页</a>><a href="/">文章详情</a></span>
+    </h2>
+
+    {#  文章信息  #}
+    <h1 class="con_tilte">{{ art.title }}</h1>
+        <p class="bloginfo">
+        <i class="avatar">
+            <img src="{{ MEDIA_URL }}{{ art.author.header|default:'author.jpg' }}" alt="图片丢失">
+        </i>
+        <span>{{ art.author.username }}</span>
+        <span>发表于：{{ art.add }}</span>
+        <span>分类：【<a href="/x/cat/{{ art.cat.pk }}">{{ art.cat.cat }}</a>】</span>
+        <span>{{ art.read }}次阅读</span>
+    </p>
+
+    {#  bgm信息  #}
+    {% if art.music and art.music.is_active %}
+        {{ art.music.code | safe }}
+    {% endif %}
+
+    {#  正文区域  #}
+    <div class="con_text">
+
+        {# 富文本 #}
+        {{ art.content | safe | default_if_none:"本文暂无内容" | default:"本文暂无内容" }}
+
+        {#  声明信息  #}
+        <p class="con_info">
+            {% if art.source %}
+                <b>版权声明</b>
+                本文属于<b>&nbsp;&nbsp;转载</b>作品，原文地址: <a href="{{ art.source }}" target="_blank">{{ art.source }}</a>
+                本站尊重作者的创作成果，侵权或其他问题请联系本站删除。
+            {% else %}
+                <b>版权声明</b>
+                本文属于本站<b>&nbsp;&nbsp;原创</b>作品，文章版权归本站及作者所有，请尊重作者的创作成果，转载、引用自觉附上本文永久地址：
+                {{ SITE.host }}/x/art/{{ art.pk }}
+            {% endif %}
+        </p>
+        {# 点赞，打赏 #}
+        <div class="dashang">
+            <p class="like">
+                <span class="diggit"><button id="like">很赞哦({{ art.like }})</button></span>
+                <span class="shang"><input id="dashang" type="button" value="赏"></span>
+                <span class="diggit"><button id="copy">复制地址</button></span>
+                <input type="hidden" name="link" value="{{ SITE.host }}/x/art/{{ art.pk }}">
+                <input type="hidden" name="author" value="{{ art.author.username }}">
+                <input type="hidden" name="site" value="{{ SITE.name }}">
+            </p>
+        </div>
+
+        {# ------上下篇链接------ #}
+        <div class="nextinfo">
+            {% if prev %}
+                <p>上一篇：<a href="/x/art/{{ prev.pk }}" target="_self">{{ prev.title }}</a></p>
+            {% else %}
+                <p>上一篇：无</p>
+            {% endif %}
+
+            {% if next %}
+                <p>下一篇：<a href="/x/art/{{ next.pk }}" target="_self">{{ next.title }}</a></p>
+            {% else %}
+                <p>下一篇：无</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
